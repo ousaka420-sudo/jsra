@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>JSRA — We stitch the seams.</title>
+  <meta name="description" content="一般社団法人 日本継目補修協会。見えない継目を、縫い合わせる。">
+  <!-- トライアル中は検索エンジンに載せない（URLを知っている人だけが見られる） -->
+  <meta name="robots" content="noindex, nofollow">
+  <!-- SNSで共有されたときの表示 -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ousaka420-sudo.github.io/jsra/">
+  <meta property="og:image" content="https://ousaka420-sudo.github.io/jsra/assets/ogp.jpg">
+  <meta property="og:title" content="日本継目補修協会（JSRA）">
+  <meta property="og:description" content="閉鎖されたモールの「継目」を覗く、ブラウザで遊べるホラーノベルゲーム。">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#f4f2ee">
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700;900&family=M+PLUS+Rounded+1c:wght@500;800&family=Inter:wght@400;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 公開HP（入口） -->
+  <section id="view-hp" class="view hp" hidden>
+    <header class="hp-header">
+      <a class="hp-logo" href="#/">JSRA</a>
+      <nav class="hp-nav">
+        <a href="#works">Works</a>
+        <a href="#about">About</a>
+        <a href="#news">News</a>
+      </nav>
+      <a class="hp-staff" href="#/login">STAFF ONLY</a>
+    </header>
+
+    <div class="hp-hero">
+      <p class="hp-kicker">Japan Seam Repair Association</p>
+      <h1 class="hp-title">We stitch<br>the seams.</h1>
+      <p class="hp-sub">見えない<span class="moji" data-word="継目">邯咏岼</span>を、縫い合わせる。</p>
+    </div>
+
+    <div class="ad-slot" data-ad="hp-top"></div>
+
+    <section id="works" class="hp-works">
+      <h2 class="hp-h2">Works</h2>
+      <div class="hp-grid">
+        <figure class="hp-work w1"><img class="ph" src="assets/hp/corridor.webp" alt="団地の廊下" loading="lazy" width="800" height="598"><figcaption><b>Corridor</b> 団地 四号棟 — 夕方の、ひとつ多い部屋。</figcaption></figure>
+        <figure class="hp-work w2"><img class="ph" src="assets/hp/gate.webp" alt="鳥居" loading="lazy" width="800" height="598"><figcaption><b>Gate</b> 境内 — 鳥居のあいだの、半歩ぶんのすき間。</figcaption></figure>
+        <figure class="hp-work w3"><img class="ph" src="assets/hp/room.webp" alt="座敷" loading="lazy" width="800" height="598"><figcaption><b>Room</b> 旧家 奥座敷 — 襖を閉めても、閉じないもの。</figcaption></figure>
+        <figure class="hp-work w4"><img class="ph" src="assets/hp/mall.webp" alt="閉鎖されたモール" loading="lazy" width="800" height="598"><figcaption><b>Mall</b> フォレストサイドパーク <span class="moji" data-word="花守">闃ｱ螳</span> — 現在、補修中。</figcaption></figure>
+      </div>
+    </section>
+
+    <section id="about" class="hp-about">
+      <h2 class="hp-h2">About</h2>
+      <p class="hp-lead">わたしたちは、こちら側と<span class="moji" data-word="あちら側">縺ゅ■繧牙ｴ</span>のあいだで働いています。</p>
+      <p class="hp-small">ほつれは、小さいうちに。<br>Small tears, mended early.</p>
+    </section>
+
+    <section id="news" class="hp-news">
+      <h2 class="hp-h2">News</h2>
+      <ul>
+        <li><time>2026.10.03</time><span>フォレストサイドパーク <span class="moji" data-word="花守">闃ｱ螳</span>：フードコート区画の補修を完了しました。</span></li>
+        <li><time>2026.10.01</time><span>夜間補修スタッフを募集しています（ツギメイトにて掲載中）。</span></li>
+        <li><time>2026.09.12</time><span><span class="moji" data-word="斑森">譁第｣ｮ</span>地区の立入制限について。</span></li>
+      </ul>
+    </section>
+
+    <div class="ad-slot" data-ad="hp-bottom"></div>
+
+    <footer class="hp-footer">
+      <p>© Japan Seam Repair Association</p>
+      <p class="hp-links"><button type="button" data-open="privacy">プライバシーポリシー</button><button type="button" data-open="consent">Cookie設定</button></p>
+      <p class="fiction">本サイトはフィクションです。実在の人物・団体・施設・求人とは関係ありません。<br>画像の多くは生成AI（Google Gemini ほか）で作成しています。</p>
+    </footer>
+  </section>
+
+  <!-- STAFF ONLY ログイン -->
+  <section id="view-login" class="view login" hidden>
+    <div class="login-card">
+      <a class="login-back" href="#/">← JSRA</a>
+      <p class="login-label">STAFF ONLY</p>
+      <h1>職員ポータル</h1>
+      <!-- 入力欄は読み取り専用。本物のパスワードを打たせない -->
+      <label>職員番号<input type="text" value="JSRA-●●●●" readonly></label>
+      <label>パスワード<input type="password" value="●●●●●●●●" readonly></label>
+      <button type="button" class="login-btn" id="login-btn">ログイン</button>
+      <p class="login-msg" id="login-msg" aria-live="polite"></p>
+      <p class="fiction">本サイトはフィクションです。入力欄はダミーです。</p>
+    </div>
+  </section>
+
+  <!-- ハブ「のぞき窓」 -->
+  <section id="view-hub" class="view hub" hidden>
+    <div class="device-frame">
+      <header class="hub-head">
+        <div>
+          <p class="hub-tool">のぞき窓 <span>v0.6</span></p>
+          <p class="hub-status"><i class="dot"></i>接続中　視覚フィルタ ON</p>
+        </div>
+        <button type="button" class="hub-menu-btn" id="hub-menu-btn" aria-label="設定">⋯</button>
+      </header>
+      <div class="hub-body" id="hub-body"></div>
+    </div>
+  </section>
+
+  <!-- 再生画面 -->
+  <section id="view-play" class="view play" hidden>
+    <div class="device-frame" id="player-root"></div>
+  </section>
+
+  <!-- 同意バナー（演出ではない本物の告知） -->
+  <div class="consent" id="consent" hidden>
+    <p class="consent-real">これは演出ではありません</p>
+    <p>当サイトでは、今後の広告配信とアクセス解析のために Cookie などの技術を使う予定です。現在は外部への利用者情報の送信は行っていません（表示している広告はすべて作中の架空広告です）。</p>
+    <div class="consent-btns">
+      <button type="button" data-consent="rejected">同意しない</button>
+      <button type="button" data-consent="accepted" class="primary">同意する</button>
+    </div>
+    <button type="button" class="link" data-open="privacy">プライバシーポリシー</button>
+  </div>
+
+  <!-- モーダル -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card">
+      <div id="modal-body"></div>
+      <button type="button" class="modal-close" id="modal-close">閉じる</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
