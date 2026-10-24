@@ -334,6 +334,10 @@ button { font: inherit; cursor: pointer; }
 .cm-scene img { width: auto; height: 200px; }
 .cm-scene .logo { font-size: 44px; font-weight: 800; letter-spacing: .04em; }
 .cm-note { position: absolute; bottom: 22px; left: 14px; font-size: 10px; opacity: .8; }
+.cm.movie { background: #000; }
+.cm.movie video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.cm.movie .cm-label, .cm.movie .cm-note, .cm.movie .cm-skip { z-index: 1; }
+.cm-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2; background: rgba(0,0,0,.6); color: #fff; border: 1px solid rgba(255,255,255,.6); border-radius: 999px; padding: 14px 26px; font-size: 16px; }
 
 /* 警告（閲覧禁止ログ） */
 .warn { position: absolute; inset: 0; z-index: 70; display: grid; place-items: center; padding: 24px; background: rgba(5, 0, 0, .94); }

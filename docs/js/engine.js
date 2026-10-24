@@ -16,6 +16,8 @@ const SPRITES = {
   // 第二部隊のアルバイト タカミ：1=無関心
   takami: () => 'assets/chara/takami_s1.webp',
 };
+// 上の一覧にないキャラは「キャラID_s番号.webp」（番号以外は「キャラID_名前.webp」）を探す
+const sprite = (who, n = 1) => (SPRITES[who] ? SPRITES[who](n) : `assets/chara/${who}_${typeof n === 'number' ? `s${n}` : n}.webp`);
 // 表情番号：1=いたずらっぽい笑顔 2=安心させる笑顔 3=真剣 4=寂しげ（優希は 1=無表情 2=冷たい目 3=伏し目 4=かすかな笑み）
 const face = (who, n) => `assets/chara/${who}_face${n}.webp`;
 const BG_LABEL = {
@@ -235,7 +237,8 @@ export class Player {
     if (c.choice) return { insert: await this.choice(c.choice) };
     if (c.item) await this.item(c);
     if (c.app) await this.appScreen(c.app, c);
-    if (c.cm) await this.cm();
+    if (c.cm) await (c.cm === true ? this.cm() : this.movie(c.cm, true));
+    if (c.movie) await this.movie(c.movie, false);
     if (c.warn) {
       const ok = await this.warn(c.warn);
       if (!ok) { this.abort(); return null; }
@@ -277,7 +280,7 @@ export class Player {
   }
 
   setBg(el, name) {
-    const img = BG_IMAGES[name];
+    const img = BG_IMAGES[name] || (name in BG_LABEL ? null : `assets/bg/${name}.webp`);
     el.className = img ? 'bg bg-image' : `bg bg-${name}`;
     el.style.backgroundImage = img ? `url("${img}")` : '';
     el.dataset.label = img ? '' : BG_LABEL[name] || '';
@@ -288,7 +291,7 @@ export class Player {
   showSprite(who, faceNo, at) {
     const s = this.el.sprite;
     this.spriteWho = who;
-    s.src = SPRITES[who](faceNo);
+    s.src = sprite(who, faceNo);
     s.className = 'sprite' + (who === 'kouki' ? ' kouki-glow' : '') + (at ? ` at-${at}` : '');
   }
 
@@ -296,7 +299,7 @@ export class Player {
   syncSprite(who, faceNo) {
     const s = this.el.sprite;
     if (s.classList.contains('hide') || this.spriteWho !== who || !faceNo) return;
-    const src = SPRITES[who](faceNo);
+    const src = sprite(who, faceNo);
     if (!s.src.endsWith(src)) s.src = src;
   }
 
@@ -367,7 +370,7 @@ export class Player {
             : `<span class="av-txt">${esc((c.say || '?').slice(0, 1))}</span>`;
         }
         const body = c.photo
-          ? `<div class="bubble photo"><div class="glitch-photo"><img src="${SPRITES[c.photo]()}" alt=""><div class="slice"></div></div></div>`
+          ? `<div class="bubble photo"><div class="glitch-photo"><img src="${sprite(c.photo)}" alt=""><div class="slice"></div></div></div>`
           : `<div class="bubble">${esc(text)}</div>`;
         row.innerHTML = `${av}<div class="bubble-col">${!c.me && c.say ? `<p class="bubble-name">${esc(c.say)}</p>` : ''}${body}${c.time ? `<div class="bubble-time">${esc(c.time)}</div>` : ''}</div>`;
         list.appendChild(row);
@@ -528,6 +531,56 @@ export class Player {
       timers.push(setTimeout(finish, t + 200));
       skip.addEventListener('click', finish);
       this.resolveUi = finish;
+    });
+  }
+
+  // ---- 動画（CM・挿入アニメ）。cm: { src, skip } / movie: { src, skip }。skip＝何秒後にスキップできるか（なし＝スキップ不可）
+  // 再生できなかったとき、CM は仮CMに切り替え、挿入アニメはそのまま先へ進む
+  movie({ src, skip }, isCm) {
+    return new Promise((res) => {
+      const box = document.createElement('div');
+      box.className = 'cm movie';
+      box.innerHTML = `<video playsinline preload="auto" src="${esc(src)}"></video>` +
+        (isCm ? '<span class="cm-label">作中CM</span><p class="cm-note">※本CMは作中の架空広告です</p>' : '') +
+        '<button type="button" class="cm-play" hidden>▶ タップで再生</button><button type="button" class="cm-skip" hidden></button>';
+      this.el.overlay.appendChild(box);
+      const v = box.querySelector('video');
+      const playBtn = box.querySelector('.cm-play');
+      const skipBtn = box.querySelector('.cm-skip');
+      v.muted = !!store.get('muted');
+      let done = false;
+      let iv = null;
+      const finish = (failed) => {
+        if (done) return;
+        done = true;
+        clearInterval(iv);
+        v.pause();
+        box.remove();
+        this.resolveUi = null;
+        if (failed && isCm && !this.aborted) this.cm().then(res);
+        else res();
+      };
+      const countdown = () => {
+        if (skip == null || iv) return;
+        let left = Math.ceil(skip);
+        skipBtn.hidden = false;
+        const tick = () => {
+          skipBtn.disabled = left > 0;
+          skipBtn.textContent = left > 0 ? `${left}秒後にスキップ` : 'スキップ ▶';
+          if (left <= 0) clearInterval(iv);
+          left -= 1;
+        };
+        tick();
+        iv = setInterval(tick, 1000);
+      };
+      // スマホでは音つきの自動再生が止められることがあるので、そのときはボタンを出す
+      const start = () => v.play().then(countdown).catch(() => { playBtn.hidden = false; });
+      playBtn.addEventListener('click', () => { playBtn.hidden = true; start(); });
+      skipBtn.addEventListener('click', () => finish(false));
+      v.addEventListener('ended', () => finish(false));
+      v.addEventListener('error', () => finish(true));
+      this.resolveUi = () => finish(false);
+      start();
     });
   }
 
