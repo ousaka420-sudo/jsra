@@ -107,7 +107,7 @@ button { font: inherit; cursor: pointer; }
 .login.glitching .login-card { animation: glitch .5s steps(2) 3; }
 
 /* ===== 端末フレーム（スマホ幅で固定。PCでは中央に端末として置く） ===== */
-.hub, .play { background: #050608; display: grid; place-items: center; }
+.hub, .message, .play { background: #050608; display: grid; place-items: center; }
 .device-frame {
   position: relative; width: 100%; max-width: 440px; height: 100dvh; max-height: 920px;
   background: var(--night); color: #e8eaee; overflow: hidden;
@@ -116,14 +116,17 @@ button { font: inherit; cursor: pointer; }
   .device-frame { height: min(100dvh - 40px, 900px); border-radius: 32px; border: 10px solid #1b1d22; box-shadow: 0 0 0 1px #2a2d33, 0 30px 80px rgba(0,0,0,.6); }
 }
 
-/* ===== ハブ「のぞき窓」 ===== */
-.hub-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 16px 12px; border-bottom: 1px solid var(--line); }
-.hub-tool { margin: 0; font-family: var(--font-latin); font-weight: 800; font-size: 18px; }
-.hub-tool span { font-weight: 400; font-size: 11px; color: #8a8f99; }
+/* ===== 協会の職員用記録管理アプリ ===== */
+.hub-head { display: flex; align-items: center; justify-content: space-between; min-height: 94px; padding: 14px 14px 12px 16px; border-bottom: 1px solid var(--line); }
+.hub-brand { min-width: 0; }
+.hub-org { margin: 0 0 1px; font-size: 9px; letter-spacing: .14em; color: #8a8f99; }
+.hub-tool { margin: 0; font-weight: 800; font-size: 17px; letter-spacing: .02em; white-space: nowrap; }
 .hub-status { margin: 4px 0 0; font-size: 11px; color: #9aa1ab; }
 .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #3ddc84; margin-right: 6px; box-shadow: 0 0 8px #3ddc84; }
-.hub-menu-btn { background: none; border: 1px solid var(--line); color: #fff; border-radius: 10px; width: 40px; height: 36px; font-size: 18px; }
-.hub-body { height: calc(100% - 72px); overflow-y: auto; padding: 14px 16px 40px; }
+.hub-actions { display: flex; gap: 7px; flex: none; }
+.hub-message-btn, .hub-menu-btn { position: relative; background: none; border: 1px solid var(--line); color: #fff; border-radius: 10px; width: 38px; height: 36px; font-size: 17px; }
+.message-unread { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 0 2px var(--night); }
+.hub-body { height: calc(100% - 94px); overflow-y: auto; padding: 14px 16px 40px; }
 .hub-sec { font-size: 11px; letter-spacing: .14em; color: #8a8f99; margin: 18px 0 8px; }
 .dev {
   display: flex; gap: 12px; align-items: center; width: 100%; text-align: left;
@@ -140,10 +143,17 @@ button { font: inherit; cursor: pointer; }
 .dev-badge.new { background: var(--kouki); color: #142000; font-weight: 700; }
 .dev.danger { border-color: rgba(255, 77, 77, .5); background: linear-gradient(135deg, #1d1013, #161920); }
 .dev.danger .dev-badge { background: var(--danger); color: #fff; }
-.client-card { display: flex; gap: 12px; align-items: center; background: #12141a; border: 1px solid var(--line); border-radius: 16px; padding: 12px; }
-.client-card img { width: 42px; height: 42px; border-radius: 50%; }
-.client-card p { margin: 0; font-size: 13px; line-height: 1.6; }
-.client-card .who { font-size: 11px; color: #8a8f99; }
+.client-notice { position: absolute; z-index: 100; top: 0; left: 0; right: 0; min-height: 108px; padding: 12px 48px 12px 12px; background: rgba(250,249,246,.98); color: #171a1e; border-bottom: 1px solid #d8d6d0; box-shadow: 0 12px 30px rgba(0,0,0,.42); transform: translateY(-110%); }
+.client-notice.show { animation: notice-drop .46s cubic-bezier(.2,.8,.2,1) forwards; }
+.client-notice-main { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 82px; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; }
+.client-notice-main img { width: 48px; height: 48px; border-radius: 50%; background: #11141a; object-fit: contain; flex: none; }
+.client-notice-copy { display: block; min-width: 0; flex: 1; }
+.client-notice-meta { display: flex; justify-content: space-between; align-items: center; }
+.client-notice-meta b { font-size: 14px; }
+.client-notice-meta small { color: #72767d; font-size: 10px; }
+.client-notice-text { display: block; margin-top: 3px; font-size: 15px; font-weight: 700; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.client-notice-hint { display: block; margin-top: 5px; color: #72767d; font-size: 10px; }
+.client-notice-close { position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; padding: 0; border: 0; background: transparent; color: #62676f; font-size: 24px; line-height: 1; }
 
 /* ===== 再生画面 ===== */
 .player { position: absolute; inset: 0; user-select: none; -webkit-user-select: none; }
@@ -248,6 +258,7 @@ button { font: inherit; cursor: pointer; }
 /* チャット（依頼人 / ツギメイト / 閲覧禁止ログ） */
 .chat { position: absolute; inset: 0; display: flex; flex-direction: column; background: #101217; }
 .chat-head { padding: 52px 14px 10px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--line); }
+.chat-back { border: 0; background: transparent; color: inherit; font-size: 14px; padding: 8px 6px; }
 .chat-head img { width: 34px; height: 34px; border-radius: 50%; object-fit: contain; background: #fff; }
 .chat-title { font-weight: 700; font-size: 15px; }
 .chat-sub { font-size: 11px; color: #8a8f99; }
@@ -282,6 +293,25 @@ button { font: inherit; cursor: pointer; }
 .skin-log .chat-head { border-color: rgba(255,77,77,.3); }
 .skin-log .bubble { background: #1f1213; color: #f1d6d6; }
 .skin-log .sys-line { color: #ff8a8a; }
+
+/* 依頼人とのメッセージ。協会の仕事ログとは別アプリに見せる */
+.client-message .hud { display: none; }
+.client-message .skin-client { background: #f4f2ee; color: #171a1e; }
+.client-message .skin-client .chat-head { position: relative; justify-content: center; min-height: 72px; padding: 12px 56px; border-color: #d8d6d0; background: rgba(250,249,246,.96); text-align: center; }
+.client-message .skin-client .chat-back { position: absolute; left: 8px; top: 17px; color: #23272d; }
+.client-message .skin-client .chat-head img { width: 32px; height: 32px; background: #11141a; }
+.client-message .skin-client .chat-heading { min-width: 0; }
+.client-message .skin-client .chat-title { font-size: 16px; color: #171a1e; }
+.client-message .skin-client .chat-sub { color: #777b80; }
+.client-message .skin-client .chat-list { padding: 24px 14px 84px; }
+.client-message .skin-client .bubble { background: #fff; color: #171a1e; border: 1px solid #e1dfda; border-radius: 8px 16px 16px 16px; box-shadow: 0 4px 12px rgba(24,27,31,.08); }
+.client-message .skin-client .me .bubble { background: #e3e1dc; border-radius: 16px 8px 16px 16px; }
+.client-message .skin-client .bubble-name, .client-message .skin-client .bubble-time, .client-message .skin-client .sys-line, .client-message .skin-client .chat-hint { color: #777b80; }
+.client-message .skin-client .chat-hint { bottom: 14px; }
+.client-message .choices { justify-content: flex-end; padding: 24px 14px 22px; background: linear-gradient(transparent 22%, rgba(244,242,238,.96) 45%); }
+.client-message .choices p { color: #6f7379; text-shadow: none; font-size: 12px; }
+.client-message .choice { background: #fff; color: #171a1e; border-color: #b8b9bb; border-radius: 14px; text-align: left; box-shadow: 0 2px 8px rgba(24,27,31,.06); }
+.client-message .choice:hover { border-color: #4c5159; }
 
 .app { position: absolute; inset: 0; background: #f4fbfa; color: #12302c; font-family: var(--font-pop); overflow-y: auto; padding: 46px 0 24px; }
 .app-bar { display: flex; align-items: center; gap: 8px; padding: 8px 16px 12px; background: var(--accent); color: #fff; font-weight: 800; font-size: 20px; }
@@ -365,6 +395,7 @@ button { font: inherit; cursor: pointer; }
 
 @keyframes blink { 50% { opacity: .35; } }
 @keyframes fadein { from { opacity: 0; transform: translateY(4px); } }
+@keyframes notice-drop { from { transform: translateY(-110%); } to { transform: translateY(0); } }
 @keyframes static { to { background-position: 0 6px; } }
 @keyframes buzz { 0%,100% { transform: translate(0,0) rotate(0); } 25% { transform: translate(2px,-1px) rotate(1deg); } 75% { transform: translate(-2px,1px) rotate(-1deg); } }
 @keyframes shake { 20% { transform: translate(-6px, 2px); } 40% { transform: translate(5px, -3px); } 60% { transform: translate(-4px, 1px); } 80% { transform: translate(3px, 0); } }

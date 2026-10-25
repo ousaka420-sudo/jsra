@@ -91,18 +91,40 @@
     </div>
   </section>
 
-  <!-- ハブ「のぞき窓」 -->
+  <!-- ハッキングで侵入した協会の職員用アプリ -->
   <section id="view-hub" class="view hub" hidden>
     <div class="device-frame">
       <header class="hub-head">
-        <div>
-          <p class="hub-tool">のぞき窓 <span>v0.6</span></p>
-          <p class="hub-status"><i class="dot"></i>接続中　視覚フィルタ ON</p>
+        <div class="hub-brand">
+          <p class="hub-org">一般社団法人</p>
+          <p class="hub-tool">日本継目補修協会</p>
+          <p class="hub-status"><i class="dot"></i>職員用記録管理　視覚フィルタ ON</p>
         </div>
-        <button type="button" class="hub-menu-btn" id="hub-menu-btn" aria-label="設定">⋯</button>
+        <div class="hub-actions">
+          <button type="button" class="hub-message-btn" id="hub-message-btn" aria-label="依頼人とのメッセージ">
+            <span aria-hidden="true">✉</span><i class="message-unread" id="message-unread" hidden></i>
+          </button>
+          <button type="button" class="hub-menu-btn" id="hub-menu-btn" aria-label="設定">⋯</button>
+        </div>
       </header>
       <div class="hub-body" id="hub-body"></div>
+      <aside class="client-notice" id="client-notice" hidden aria-live="polite">
+        <button type="button" class="client-notice-main" id="client-notice-main">
+          <img src="assets/ui/button.svg" alt="">
+          <span class="client-notice-copy">
+            <span class="client-notice-meta"><b>依頼人</b><small>今</small></span>
+            <span class="client-notice-text" id="client-notice-text"></span>
+            <span class="client-notice-hint">タップして開く</span>
+          </span>
+        </button>
+        <button type="button" class="client-notice-close" id="client-notice-close" aria-label="通知を閉じる">×</button>
+      </aside>
     </div>
+  </section>
+
+  <!-- 依頼人とのメッセージ（仕事ログとは別のUI） -->
+  <section id="view-message" class="view message" hidden>
+    <div class="device-frame message-frame" id="message-root"></div>
   </section>
 
   <!-- 再生画面 -->

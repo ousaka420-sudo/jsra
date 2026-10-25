@@ -80,7 +80,10 @@ export class Player {
           <div class="cctv-time"></div><div class="cctv-sub"></div>
         </div>
         <div class="chat" hidden>
-          <div class="chat-head"><img alt="" hidden><div><div class="chat-title"></div><div class="chat-sub"></div></div></div>
+          <div class="chat-head">
+            <button type="button" class="chat-back" data-act="message-back" hidden>← <span>戻る</span></button>
+            <img alt="" hidden><div class="chat-heading"><div class="chat-title"></div><div class="chat-sub"></div></div>
+          </div>
           <div class="chat-list"></div><div class="chat-hint">タップで続き</div>
         </div>
         <div class="app" hidden></div>
@@ -99,7 +102,7 @@ export class Player {
       player: $('.player'), stage: $('.stage'), bg: $('.stage .bg'), sprite: $('.sprite'),
       radio: $('.radio'), radioHead: $('.radio-head'), radioList: $('.radio-list'),
       cctv: $('.cctv'), cctvBg: $('.cctv-frame .bg'), cctvFig: $('.cctv-figure'), cctvId: $('.cctv-id'), cctvTime: $('.cctv-time'), cctvSub: $('.cctv-sub'),
-      chat: $('.chat'), chatIcon: $('.chat-head img'), chatTitle: $('.chat-title'), chatSub: $('.chat-sub'), chatList: $('.chat-list'),
+      chat: $('.chat'), chatBack: $('.chat-back'), chatIcon: $('.chat-head img'), chatTitle: $('.chat-title'), chatSub: $('.chat-sub'), chatList: $('.chat-list'),
       app: $('.app'), msg: $('.msg'), msgName: $('.msg-name'), msgFace: $('.msg-face'), msgText: $('.msg-text'),
       device: $('.hud-device'), record: $('.hud-record'), filter: $('.hud-filter'), overlay: $('.overlay'),
       autoBtn: $('[data-act="auto"]'), camLabel: $('.cam-label'),
@@ -113,6 +116,10 @@ export class Player {
   }
 
   hudAction(act) {
+    if (act === 'message-back') {
+      location.hash = '#/hub';
+      return;
+    }
     if (act === 'auto') {
       this.auto = !this.auto;
       this.el.autoBtn.classList.toggle('on', this.auto);
@@ -129,7 +136,7 @@ export class Player {
       <h3>メニュー</h3>
       <button type="button" class="row" data-m="log">バックログを見る</button>
       <button type="button" class="row" data-m="mute">音：${muted ? 'OFF' : 'ON'}</button>
-      <button type="button" class="row" data-m="exit">再生を中断して のぞき窓 に戻る</button>
+      <button type="button" class="row" data-m="exit">再生を中断して 記録管理に戻る</button>
       <button type="button" class="row" data-m="close">閉じる</button></div>`;
     sheet.addEventListener('click', (e) => {
       const m = e.target.closest('[data-m]')?.dataset.m;
@@ -195,6 +202,7 @@ export class Player {
   }
 
   abort() {
+    if (this.aborted) return;
     this.aborted = true;
     if (this.resolveTap) { const r = this.resolveTap; this.resolveTap = null; r(); }
     if (this.resolveUi) { const r = this.resolveUi; this.resolveUi = null; r(null); }
@@ -270,7 +278,10 @@ export class Player {
       this.setBg(e.cctvBg, c.camBg || 'black');
     }
     if (mode === 'chat') {
+      const isClient = c.skin === 'client';
+      e.player.classList.toggle('client-message', isClient);
       e.chat.className = 'chat' + (c.skin ? ` skin-${c.skin}` : '');
+      e.chatBack.hidden = !isClient;
       e.chatTitle.textContent = c.title || '';
       e.chatSub.textContent = c.sub || '';
       e.chatIcon.hidden = !c.icon;
@@ -387,7 +398,8 @@ export class Player {
     return new Promise((res) => {
       const box = document.createElement('div');
       box.className = 'choices';
-      box.innerHTML = (q ? `<p>${esc(q)}</p>` : '') +
+      const prompt = q || (this.el.player.classList.contains('client-message') ? '返信を選ぶ' : '');
+      box.innerHTML = (prompt ? `<p>${esc(prompt)}</p>` : '') +
         opts.map((o, i) => `<button type="button" class="choice" data-i="${i}">${esc(o.label)}</button>`).join('');
       box.addEventListener('click', (e) => {
         const b = e.target.closest('[data-i]');

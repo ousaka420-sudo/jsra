@@ -82,7 +82,7 @@ const CLIENT_CHATS = [
 ];
 
 const $ = (s) => document.querySelector(s);
-const views = ['hp', 'login', 'hub', 'play'];
+const views = ['hp', 'login', 'hub', 'message', 'play'];
 
 function show(name) {
   views.forEach((v) => { $(`#view-${v}`).hidden = v !== name; });
@@ -173,19 +173,22 @@ $('#login-btn').addEventListener('click', () => {
     setTimeout(() => {
       $('#view-login').classList.remove('glitching');
       msg.textContent = '';
-      location.hash = store.get('seenPrologue') ? '#/hub' : '#/play/prologue';
+      location.hash = store.get('seenPrologue') ? '#/hub' : '#/message/prologue';
     }, 1600);
   }, 900);
 });
 
-// ---- ハブ「のぞき窓」 ----
+// ---- ハッキングで侵入した協会の職員用記録管理アプリ ----
+let activeClient = { id: 'prologue', text: '斑木光輝を探してください。まずは、ソラという子のスマホから', fresh: false };
+let dismissedNoticeId = null;
+
 function renderHub() {
   const fresh = CLIENT_CHATS.find((c) => c.after() && !store.has('readLogs', c.id));
   const lastRead = [...CLIENT_CHATS].reverse().find((c) => store.has('readLogs', c.id));
-  const client = fresh ? { text: fresh.text, go: fresh.id, fresh: true }
-    : store.has('cleared', '1-7') ? { text: '第1章 完。……兄と、ごはんを食べています', go: lastRead ? lastRead.id : 'prologue' }
-    : lastRead ? { text: '次の端末がつながるのを待っています', go: lastRead.id }
-    : { text: '斑木光輝を探してください。まずは、ソラという子のスマホから', go: 'prologue' };
+  activeClient = fresh ? { id: fresh.id, text: fresh.text, fresh: true }
+    : store.has('cleared', '1-7') ? { id: lastRead ? lastRead.id : 'prologue', text: '第1章 完。……兄と、ごはんを食べています', fresh: false }
+    : lastRead ? { id: lastRead.id, text: '次の端末がつながるのを待っています', fresh: false }
+    : { id: 'prologue', text: '斑木光輝を探してください。まずは、ソラという子のスマホから', fresh: false };
 
   const devices = DEVICES.map((d) => {
     const open = !d.notYet && (!d.needs || store.has('cleared', d.needs));
@@ -205,12 +208,6 @@ function renderHub() {
     </button>`).join('');
 
   $('#hub-body').innerHTML = `
-    <p class="hub-sec">依頼人</p>
-    <button type="button" class="dev" data-go="${client.go}" style="padding:0;border:0;background:none">
-      <div class="client-card" style="width:100%"><img src="assets/ui/button.svg" alt="">
-        <div><p class="who">依頼人${client.fresh ? '　<span class="dev-badge new">新着</span>' : ''}</p><p>${client.text}</p></div></div>
-    </button>
-
     <p class="hub-sec">接続できる端末</p>
     ${devices}
 
@@ -219,7 +216,28 @@ function renderHub() {
     <div class="ad-slot" data-ad="hub"></div>
     <p class="fiction" style="margin-top:24px">本サイトはフィクションです。実在の人物・団体・施設・求人とは関係ありません。</p>`;
   renderAds();
+  renderClientNotice();
 }
+
+function renderClientNotice() {
+  const notice = $('#client-notice');
+  const showNotice = activeClient.fresh && dismissedNoticeId !== activeClient.id;
+  $('#message-unread').hidden = !activeClient.fresh;
+  notice.hidden = !showNotice;
+  notice.classList.toggle('show', showNotice);
+  $('#client-notice-text').textContent = activeClient.text;
+}
+
+function openClientMessage() {
+  location.hash = `#/message/${activeClient.id}`;
+}
+
+$('#hub-message-btn').addEventListener('click', openClientMessage);
+$('#client-notice-main').addEventListener('click', openClientMessage);
+$('#client-notice-close').addEventListener('click', () => {
+  dismissedNoticeId = activeClient.id;
+  renderClientNotice();
+});
 
 $('#hub-body').addEventListener('click', (e) => {
   const b = e.target.closest('[data-go]');
@@ -241,11 +259,11 @@ $('#hub-menu-btn').addEventListener('click', () => {
 
 // ---- 再生 ----
 let current = null;
-async function play(id) {
+async function play(id, root = $('#player-root'), returnTo = '#/hub') {
   const script = SCENES[id];
   if (!script) { location.hash = '#/hub'; return; }
   if (current) current.abort();
-  const player = new Player($('#player-root'), { toast });
+  const player = new Player(root, { toast });
   current = player;
   const r = await player.run(script);
   if (current !== player) return; // 別の再生に切り替わった
@@ -257,14 +275,15 @@ async function play(id) {
     if (r.read) store.mark('readLogs', r.read);
   }
   if (id === 'prologue') store.set('seenPrologue', true);
-  location.hash = '#/hub';
+  location.hash = returnTo;
 }
 
 // ---- ルーター ----
 function route() {
   const h = location.hash || '#/';
-  if (current && !h.startsWith('#/play/')) { const p = current; current = null; p.abort(); }
+  if (current) { const p = current; current = null; p.abort(); }
   if (h.startsWith('#/play/')) { show('play'); play(decodeURIComponent(h.slice(7))); return; }
+  if (h.startsWith('#/message/')) { show('message'); play(decodeURIComponent(h.slice(10)), $('#message-root')); return; }
   if (h === '#/login') { show('login'); return; }
   if (h === '#/hub') { show('hub'); renderHub(); return; }
   if (h.startsWith('#/')) { show('hp'); return; }
