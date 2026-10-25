@@ -431,6 +431,7 @@ export class Player {
     const a = this.el.app;
     const bar = `<div class="app-bar"><img src="${MASCOT}" alt="">ツギメイト</div>`;
     const d = c.data || {};
+    let autoSubmitTimer = null;
     if (kind === 'job') {
       a.innerHTML = `${bar}
         <div class="app-card">
@@ -462,6 +463,10 @@ export class Player {
         const n = +s.dataset.star;
         a.querySelectorAll('[data-star]').forEach((x) => x.classList.toggle('on', +x.dataset.star <= n));
         btn.disabled = false;
+        btn.textContent = '評価を送信中…';
+        clearTimeout(autoSubmitTimer);
+        // 星を選んだ操作そのものを送信として扱い、ここで再生が止まらないようにする
+        autoSubmitTimer = setTimeout(() => btn.click(), 350);
         // 一瞬だけマスコットの笑顔が広すぎる
         const m = a.querySelector('img.m');
         m.src = MASCOT_UNCANNY;
@@ -483,8 +488,17 @@ export class Player {
     if (kind !== 'order' && kind !== 'report') a.className = 'app';
     a.scrollTop = 0;
     return new Promise((res) => {
-      this.resolveUi = res;
-      a.querySelector('.app-btn').addEventListener('click', () => { sfx('notify'); this.resolveUi = null; res(); }, { once: true });
+      let settled = false;
+      const finish = (notify) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(autoSubmitTimer);
+        if (notify) sfx('notify');
+        this.resolveUi = null;
+        res();
+      };
+      this.resolveUi = () => finish(false);
+      a.querySelector('.app-btn').addEventListener('click', () => finish(true), { once: true });
     });
   }
 
